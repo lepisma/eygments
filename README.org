@@ -3,6 +3,4 @@
 (Approximately) Export Emacs color themes as [[https://pygments.org][pygments]] compatible CSS.
 
 Switch to your desired theme in Emacs, then run ~eygments-export~ to insert CSS
-in at current point in buffer.
-
-/Only works with color schemes which use hex values for face colors/
+at current point in buffer.
