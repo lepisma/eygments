@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017 Abhinav Tushar
 
 ;; Author: Abhinav Tushar <abhinav.tushar.vs@gmail.com>
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; URL: https://github.com/lepisma/eygments
 
 ;;; Commentary:
@@ -33,13 +33,17 @@
   "Return header"
   "/* Pygments theme exported from Emacs */")
 
-(defun eygments--rule (class color &optional rule-pair)
+(defun eygments--rule (class color &optional rule-pairs)
   "Return a css rule for given CLASS and COLOR. Optionally apply
-provided RULE-PAIR alist like (\"background-color\" . \"red\")."
+provided RULE-PAIRS alist with items like (\"background-color\" . \"red\")."
   (concat ".highlight "
           (if class (concat "." class " "))
           "{ color: " color "; "
-          (if rule-pair (concat (car rule-pair) ": " (cdr rule-pair) "; "))
+          (mapconcat (lambda (rule)
+                       (concat (car rule) ": " (cdr rule)))
+                     rule-pairs
+                     "; ")
+          (if rule-pairs " ")
           "}"))
 
 (defun eygments--color-to-hex (color-name)
@@ -102,7 +106,7 @@ provided RULE-PAIR alist like (\"background-color\" . \"red\")."
   (eygments--eval
    (concat "/* Style */\n"
            ;; Main stuff
-           (eygments--rule nil foreground `("background-color" . ,background)) "\n"
+           (eygments--rule nil foreground `(("background-color" . ,background))) "\n"
            ;; Comment
            (eygments--rule "c" comment) "\n"
            ;; Error
@@ -132,7 +136,7 @@ provided RULE-PAIR alist like (\"background-color\" . \"red\")."
            ;; Generic.Deleted
            (eygments--rule "gd" string) "\n"
            ;; Generic.Emphasis
-           (eygments--rule "ge" foreground `("font-style" . "italic")) "\n"
+           (eygments--rule "ge" foreground '(("font-style" . "italic"))) "\n"
            ;; Generic.Error
            (eygments--rule "gr" warning) "\n"
            ;; Generic.Heading
@@ -144,7 +148,7 @@ provided RULE-PAIR alist like (\"background-color\" . \"red\")."
            ;; Generic.Prompt
            (eygments--rule "gp" foreground) "\n"
            ;; Genric.Strong
-           (eygments--rule "gs" foreground `("font-weight" . "bold")) "\n"
+           (eygments--rule "gs" foreground '(("font-weight" . "bold"))) "\n"
            ;; Generic.Subheading
            (eygments--rule "gu" constant) "\n"
            ;; Generic.Traceback
