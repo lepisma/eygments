@@ -42,15 +42,25 @@ provided RULE-PAIR alist like (\"background-color\" . \"red\")."
           (if rule-pair (concat (car rule-pair) ": " (cdr rule-pair) "; "))
           "}"))
 
+(defun eygments--color-to-hex (color-name)
+  "Convert COLOR-NAME to hex representation"
+  (if (string-prefix-p "#" color-name) color-name
+    (apply 'color-rgb-to-hex `(,@(color-name-to-rgb color-name) 2))))
+
 (defun eygments--face-foreground (face)
   "Return foreground of given FACE. Fallback to default foreground."
-  (let ((fore (face-foreground face)))
-    (if fore fore (face-foreground 'default))))
+  (let ((fore (or (face-foreground face) (face-foreground 'default))))
+    (eygments--color-to-hex fore)))
+
+(defun eygments--face-background (face)
+  "Return background of given FACE. Fallback to default background."
+  (let ((back (or (face-background face) (face-background 'default))))
+    (eygments--color-to-hex back)))
 
 (defmacro eygments--eval (stuff)
   "Eval STUFF in current faces' context"
-  `(let* ((foreground (face-foreground 'default))
-         (background (face-background 'default))
+  `(let ((foreground (eygments--face-foreground 'default))
+         (background (eygments--face-background 'default))
          (builtin (eygments--face-foreground 'font-lock-builtin-face))
          (comment (eygments--face-foreground 'font-lock-comment-face))
          (constant (eygments--face-foreground 'font-lock-constant-face))
